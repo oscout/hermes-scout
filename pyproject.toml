@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hermes-scout"
-version = "1.0.0"
+version = "0.2.65.dev0"
 description = "Scout messaging integration for Hermes Agent — send, ask, and broadcast to Scout agents"
 readme = "README.md"
 license = "MIT"
@@ -15,7 +15,10 @@ dependencies = []
 dev = ["build", "twine"]
 
 [project.urls]
-Home = "https://github.com/yourname/hermes-scout"
+Home = "https://github.com/arach/hermes-scout"
+
+[project.entry-points."hermes_agent.plugins"]
+scout = "hermes_scout"
 
 [tool.hatch.build.targets.wheel]
 packages = ["hermes_scout"]

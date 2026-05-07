@@ -1,10 +1,10 @@
 # hermes-scout
 
-Scout messaging integration for [Hermes Agent](https://github.com/itsdanielg/hermes-agent) — send, ask, and broadcast to Scout agents directly from any Hermes chat session.
+Scout messaging integration for [Hermes Agent](https://github.com/NousResearch/hermes-agent) — send, ask, and broadcast to Scout agents directly from any Hermes chat session.
 
 ## What it does
 
-Provides 7 Scout tools in Hermes:
+Provides 12 Scout tools in Hermes:
 
 | Tool | Description |
 |------|-------------|
@@ -12,9 +12,14 @@ Provides 7 Scout tools in Hermes:
 | `scout_agents_search` | Search the live Scout broker for agents by query |
 | `scout_agents_resolve` | Resolve an exact agent handle |
 | `scout_messages_send` | Post a Scout tell/update to an agent |
+| `scout_messages_reply` | Reply through an active Scout reply context |
 | `scout_invocations_ask` | Create an ask/work handoff (inline or async) |
+| `scout_invocations_get` | Fetch a Scout ask flight by ID |
+| `scout_invocations_wait` | Briefly wait for a Scout ask flight |
 | `scout_work_update` | Update a durable work item state |
 | `scout_card_create` | Create a dedicated agent card with a reply address |
+| `scout_current_reply_context` | Inspect the active Scout reply context |
+| `scout_session_attach_current` | Attach a supported current host session to Scout |
 
 Also registers `on_session_start`, `on_session_end`, and `post_tool_call` hooks.
 
@@ -24,11 +29,17 @@ Talks to `scout mcp` via JSON-RPC 2.0 over stdio using the Model Context Protoco
 
 ## Requirements
 
-- [Hermes Agent](https://github.com/itsdanielg/hermes-agent) v0.6.0+
-- [Scout](https://scout.dev) installed and `scout mcp` available on PATH
+- [Hermes Agent](https://github.com/NousResearch/hermes-agent) v0.6.0+
+- [Scout](https://scout.dev) v0.2.65+ installed and `scout mcp` available on PATH
 - Python 3.9+
 
 ## Installation
+
+### From GitHub
+
+```bash
+hermes plugins install arach/hermes-scout
+```
 
 ### As a directory plugin (recommended for development)
 
@@ -39,14 +50,34 @@ hermes tools list | grep scout
 
 ### As a pip package
 
+The package exposes the `hermes_agent.plugins` entry point, so pip-based
+installations can be discovered by Hermes environments that scan installed
+Python packages.
+
 ```bash
 pip install hermes-scout
-hermes plugins install hermes-scout
+hermes plugins list
 ```
 
 ## Configuration
 
-No configuration required. The plugin starts a `scout mcp` subprocess per session and communicates over stdio.
+No configuration required for a normal install. The plugin starts a `scout mcp`
+subprocess per session and communicates over stdio.
+
+For development, pin the MCP server to a local OpenScout checkout instead of
+the `scout` binary on PATH:
+
+```bash
+export OPENSCOUT_MCP_COMMAND="bun /Users/art/dev/openscout/apps/desktop/bin/scout.ts mcp"
+```
+
+You can also set `OPENSCOUT_MCP_BIN` to a specific Scout executable; the plugin
+will append `mcp`.
+
+When `OPENSCOUT_AGENT` is not already set, the bridge runs the matching
+`whoami --json` command before `mcp` and passes the resolved Scout card identity
+into the MCP subprocess. That keeps Hermes actions attributed to the project
+agent instead of the operator.
 
 ## Architecture
 
