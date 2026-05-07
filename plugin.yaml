@@ -1,0 +1,3 @@
+name: scout
+version: "1.0.0"
+description: Scout messaging integration — send, ask, and broadcast to Scout agents from Hermes
